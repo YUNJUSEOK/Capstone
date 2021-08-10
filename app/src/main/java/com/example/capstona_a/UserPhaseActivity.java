@@ -39,7 +39,7 @@ public class UserPhaseActivity extends AppCompatActivity {
         Button btn = (Button)findViewById(R.id.btn_ingameInfo);
         ImageView img_summoner = (ImageView)findViewById(R.id.img_summoner);
         ImageView img_Tier=(ImageView)findViewById(R.id.img_Tier);
-        String api_key="RGAPI-cd98fdf2-f3c7-4c0c-bca8-65bba550f0ae";
+        String api_key="RGAPI-d98dcf8f-04bb-4516-a455-0f302548115e";
         CMatchData_a matchdatalist=(CMatchData_a)getApplication();
         textView_nameSummoner.setText(User.getName());
         String profileimgSrc = "https://ddragon.leagueoflegends.com/cdn/11.15.1/img/profileicon/"+String.valueOf(User.getProfileIconId())+".png";
@@ -63,7 +63,7 @@ public class UserPhaseActivity extends AppCompatActivity {
                 String tier=ChangeTiertoKoreanandimg(arrayList.get(1).getTier(),img_Tier);
                 textView_nameTier.setText(tier+" "+arrayList.get(1).getRank());
                 textView_nameScore.setText("점수: "+arrayList.get(1).getLeaguePoints());
-                textView_Recordgame.setText("승: "+arrayList.get(1).getWins()+"  패: "+arrayList.get(0).getLosses());
+                textView_Recordgame.setText("승: "+arrayList.get(1).getWins()+"  패: "+arrayList.get(1).getLosses());
 
 
 
@@ -78,51 +78,58 @@ public class UserPhaseActivity extends AppCompatActivity {
         });
 
         Call <CMatchData> res2 = RetroBuild.getInstance().getService().getMatchId(User.getAccountId(), api_key);
-        res2.enqueue(new Callback<CMatchData>() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onResponse(Call<CMatchData> call, Response<CMatchData> response) {
-                Log.d("Retrofit CMatch success", response.toString());
-                CMatchData matchData = response.body();
-                //Toast.makeText(getApplicationContext(), CMatchData.getMatches().get(1).getLane(), Toast.LENGTH_SHORT).show();
+            public void run() {
+                res2.enqueue(new Callback<CMatchData>() {
+                    @Override
+                    public void onResponse(Call<CMatchData> call, Response<CMatchData> response) {
+                        Log.d("Retrofit CMatch success", response.toString());
+                        CMatchData matchData = response.body();
+                        //Toast.makeText(getApplicationContext(), CMatchData.getMatches().get(1).getLane(), Toast.LENGTH_SHORT).show();
 
 
-                for(int i=0; i<11; i++){
-                    CMatch match1 = new CMatch();
-                    match1 = matchData.getMatches().get(i);
-                    int Champcode= match1.getChampion();
-                    String Champname=changeChampionIdToName(Champcode);
-                    String champimgsrc="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+Champname+"_0.jpg";
-                    String ChampnameKR=changeEnglishToKoreanName(Champcode);
-                    match1.setImgSrc(champimgsrc);
-                    match1.setChampName(ChampnameKR);
-                    CMatchArrayList.add(i, match1);
-                    Toast.makeText(getApplicationContext(),CMatchArrayList.get(i).getChampName(),Toast.LENGTH_SHORT).show();
+                        for(int i=0; i<11; i++){
+                            CMatch match1 = new CMatch();
+                            match1 = matchData.getMatches().get(i);
+                            int Champcode= match1.getChampion();
+                            String Champname=changeChampionIdToName(Champcode);
+                            String champimgsrc="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+Champname+"_0.jpg";
+                            String ChampnameKR=changeEnglishToKoreanName(Champcode);
+                            match1.setImgSrc(champimgsrc);
+                            match1.setChampName(ChampnameKR);
+                            match1.setAccountId(User.getAccountId());
+                            CMatchArrayList.add(i, match1);
 
-                }
+                        }
 
-                final UserPhaseAdapter userPhaseAdapter = new UserPhaseAdapter(getApplicationContext(), CMatchArrayList);
-                listView.setAdapter(userPhaseAdapter);
-
-
-                // ArrayList<CUserPrintData>UserDataList=PrintAnyway(CMatchArrayList,User);
+                        final UserPhaseAdapter userPhaseAdapter = new UserPhaseAdapter(getApplicationContext(), CMatchArrayList);
+                        listView.setAdapter(userPhaseAdapter);
 
 
-
-
-
-
+                        // ArrayList<CUserPrintData>UserDataList=PrintAnyway(CMatchArrayList,User);
 
 
 
 
 
-            }
 
-            @Override
-            public void onFailure(Call<CMatchData> call, Throwable t) {
+
+
+
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<CMatchData> call, Throwable t) {
+
+                    }
+                });
 
             }
         });
+
 
         //Toast.makeText(getApplicationContext(),matchdatalist.getCMatchlist().get(0).getChampName(), Toast.LENGTH_SHORT).show();
         /*
@@ -829,53 +836,6 @@ public class UserPhaseActivity extends AppCompatActivity {
         }
         return tier;
     }
-    ArrayList<CUserPrintData> PrintAnyway(CMatchData_a Matchlist,CUserDTO User)
-    {
-        int playernum=0;
-
-        ArrayList<CUserPrintData> dataList=null;
-        Count j = new Count();
-        j.setK(0);
-        for(int i=0; i<9;i++)
-        {
-            if(Matchlist.getCMatchlist().get(i).isDatapresence()==true)
-            {
-                String id=User.getAccountId();
-                for(int k=0; k<10; k++)
-                {
-                    if(id==Matchlist.getCMatchlist().get(i).getParticipantIdentities().get(k).getPlayer().getAccountId())
-                    {
-                        CUserPrintData data= new CUserPrintData();
-                        playernum=Matchlist.getCMatchlist().get(i).getParticipantIdentities().get(k).getParticipantId();
-                        data.setKill((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getKills()));
-                        data.setAssist((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getAssists()));
-                        data.setDeaths((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getDeaths()));
-                        data.setChamplevel((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getChampLevel()));
-                        data.setChampName((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getChampionId().intValue()));
-                        data.setAverage((data.getKill()+data.getAssist()+data.getDeaths())/3);
-                        data.setItem0((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem0()));
-                        data.setItem1((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem1()));
-                        data.setItem2((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem2()));
-                        data.setItem3((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem3()));
-                        data.setItem4((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem4()));
-                        data.setItem5((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem5()));
-                        data.setItem6((Matchlist.getCMatchlist().get(i).getParticipants().get(playernum).getStats().getItem6()));
-                        data.setImgSrc(Matchlist.getCMatchlist().get(i).getImgSrc());
-                        data.setGameDuration(Matchlist.getCMatchlist().get(i).getGameDuration());
-                        dataList.add(j.getK(),data);
-                        j.setK(j.getK()+1);
-
-                    }
-
-                }
-
-
-            }
-        }
-        return dataList;
-
-    }
-
 
 
 }

@@ -45,6 +45,15 @@ public class CMatch {
     private String imgSrc;
     private List<CTeam> teams = null;
     private boolean datapresence;
+    private String accountId;
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
 
     public List<CTeam> getTeams() {
         return teams;

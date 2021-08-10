@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button btn=(Button)findViewById(R.id.btn_search);
         EditText editText=(EditText)findViewById(R.id.search_textbar);
-        String api_key="RGAPI-cd98fdf2-f3c7-4c0c-bca8-65bba550f0ae";
+        String api_key="RGAPI-d98dcf8f-04bb-4516-a455-0f302548115e";
         Intent intent = new Intent(MainActivity.this, UserPhaseActivity.class);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

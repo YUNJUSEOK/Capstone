@@ -8,17 +8,17 @@ import java.io.Serializable;
 public class CXpPerMinDeltas implements Serializable {
     @SerializedName("10-20")
     @Expose
-    private Long _1020;
+    private double _1020;
     @SerializedName("0-10")
     @Expose
     private Double _010;
     private final static long serialVersionUID = -1879705028982236550L;
 
-    public Long get1020() {
+    public double get1020() {
         return _1020;
     }
 
-    public void set1020(Long _1020) {
+    public void set1020(double _1020) {
         this._1020 = _1020;
     }
 
